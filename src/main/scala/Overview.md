@@ -36,7 +36,7 @@ Other general issues:
     - Too many 'primitives' string params - introduce classes (extra points for value class / opaque type)
     - addBook can add a book where the author doesn't exist
     - getBook is never used
-    - Book and Author are linked by author name, should be by author id
+    - models.Book and models.Author are linked by author name, should be by author id
     - 2 'DB' classes could use a common trait or similar - would require some sort of serialisation
     - Mutability (outside db)
     - All 1 file
