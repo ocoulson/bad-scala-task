@@ -1,6 +1,6 @@
 package services
 import models._
-class LibraryService(db: BookDatabase, db2: AuthorDatabase) {
+class LibraryService(bookDb: BookDatabase, authorsDb: AuthorDatabase) {
 
 
   def getBooksForGenre(genre: Genre): List[Book] = {
@@ -12,28 +12,31 @@ class LibraryService(db: BookDatabase, db2: AuthorDatabase) {
 //      }
 //    }
 //    o
-    db.list.filter(_.genre == genre)
+    bookDb.list.filter(_.genre == genre)
   }
 
   def getBooksForAuthor(authorName: String): List[Book] =
-    db2.list.find(_.name == authorName) match {
+    authorsDb.list.find(_.name == authorName) match {
       case None =>
         //Author not found
         List.empty
       case Some(author) =>
-        db.list.filter(_.authorName == author.name)
+        bookDb.list.filter(_.authorName == author.name)
     }
 
-  def getAuthorTotalPages(authorName: String): Int =
-    db2.list.find(_.name == authorName).map(author =>
-      db.list.filter(_.authorName == author.name).map(_.pages).sum
+  def getAuthorTotalPages(authorName: String): Int = {
+    // First line is not strictly necessary - tests show you return 0 if author doesn't exist
+    // Code could be improved to surface the error that the author doesn't exist
+    authorsDb.list.find(_.name == authorName).map(author =>
+      bookDb.list.filter(_.authorName == author.name).map(_.pages).sum
     ).getOrElse(0)
+  }
 
 
   def addBookToAuthor(book: Book, authorName: String): Option[Book] =
-    db2.getByName(authorName) match {
+    authorsDb.getByName(authorName) match {
       case Some(_) =>
-        db.add(book)
+        bookDb.add(book)
         Some(book)
       case None => None
     }
@@ -41,5 +44,5 @@ class LibraryService(db: BookDatabase, db2: AuthorDatabase) {
 }
 
 object LibraryService {
-  def apply(db: BookDatabase, db2: AuthorDatabase) = new LibraryService(db, db2)
+  def apply(books: BookDatabase, authors: AuthorDatabase) = new LibraryService(books, authors)
 }

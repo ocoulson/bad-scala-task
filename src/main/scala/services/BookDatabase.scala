@@ -5,7 +5,7 @@ import models.{Book, Id}
 import scala.collection.mutable
 
 class BookDatabase  {
-  val books: mutable.Map[Id, Book] = mutable.Map.empty
+  private val books: mutable.Map[Id, Book] = mutable.Map.empty
 
   def add(a: Book): Book = {
     books += (a.id -> a)
